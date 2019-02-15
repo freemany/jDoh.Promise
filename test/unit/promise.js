@@ -11,6 +11,8 @@ describe('Promise', () => {
         })
     };
 
+    const oneService = {service: service('Result', 7), expected: 'Result'};
+
     it('testing promise', () => {
         const p = new P();
 
@@ -27,12 +29,38 @@ describe('Promise', () => {
         expect(res).to.eql(result);
     });
 
-    it('multi resolve', async () => {
+    it('chain resolve', async () => {
         const result = Math.random();
         const serviceP = service(result, 0).then(() => {}).then(() => {});
         const res = await serviceP;
 
         expect(res).to.eql(result);
+    });
+
+    it('multi resolve1', async () => {
+        const res = await oneService.service;
+
+        expect(res).to.eql(oneService.expected);
+    });
+    it('multi resolve2', async () => {
+        const res = await oneService.service;
+
+        expect(res).to.eql(oneService.expected);
+    });
+    it('multi resolve3', async () => {
+        const res = await oneService.service;
+
+        expect(res).to.eql(oneService.expected);
+    });
+
+    it('chain return', async () => {
+        const result = Math.random();
+        const result1 = Math.random();
+        const result2 = Math.random();
+        const serviceP = service(result, 5).then(() => result1).then(() => result2);
+        const res = await serviceP;
+
+        expect(res).to.eql(result2);
     });
 
     it('Promise.resolve string', async () => {

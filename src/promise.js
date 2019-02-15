@@ -5,24 +5,8 @@ class P {
         this.isInit = false;
         this.resolveCallback = resolveCallback;
         this.rejectStack = [];
-    }
-
-    _init() {
-        this.resolve= (result) => {
-            for(let i=0; i< this.cbStack.length; i++) {
-                if (typeof this.cbStack[i] === 'function') {
-                    this.cbStack[i].call(this, result);
-                }
-            }
-        }
-        this.reject= (result) => {
-            for(let i=0; i< this.cbRejectStack.length; i++) {
-                this.cbRejectStack[i].call(this, result);
-            }
-        }
-
-        this.resolveCallback.call(this.resolveCallback, this.resolve, this.reject);
-        this.isInit = true;
+        this.resolve = null;
+        this.result = null;
     }
 
     catch(cb) {
@@ -34,12 +18,29 @@ class P {
     }
 
     then(cb) {
-        if (false === this.isInit) {
-            this._init();
-        }
-        this.cbStack.push(cb);
 
-        return this;
+        const reject = () => {};
+        if (null === this.resolve) {
+            this.resolve= (result) => {
+                if (typeof cb === 'function') {
+                    this.result = cb.call(cb, result);
+                }
+            }
+        } else {
+            this.resolve = (result) => {
+                if (typeof cb === 'function') {
+                    this.then();
+                    if (null === this.result || undefined=== this.result) {
+                        this.result = cb.call(cb, result);
+                    } else {
+                        this.result = cb.call(cb, this.result);
+                    }
+                }
+            }
+        }
+        this.resolveCallback.call(this.resolveCallback, this.resolve, reject);
+
+        return this
     }
 }
 

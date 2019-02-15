@@ -1,9 +1,8 @@
-const Promise = require('../../src/promise.js');
+const P = require('../../src/promise.js');
 
 describe('Promise', () => {
-
     const service = (val, timeout) => {
-        return new Promise((resolve, reject) => {
+        return new P((resolve, reject) => {
             resolve(val);
             setTimeout(() => {
                 resolve(val);
@@ -13,12 +12,12 @@ describe('Promise', () => {
     };
 
     it('testing promise', () => {
-        const p = new Promise();
+        const p = new P();
 
-        expect(p instanceof Promise).to.eql(true);
+        expect(p instanceof P).to.eql(true);
         expect(typeof p.then).to.eql('function');
-        expect(typeof Promise.race).to.eql('function');
-        expect(typeof Promise.all).to.eql('function');
+        expect(typeof P.race).to.eql('function');
+        expect(typeof P.all).to.eql('function');
     });
 
     it('resolve', async () => {
@@ -26,7 +25,37 @@ describe('Promise', () => {
         const res = await service(result, 0);
 
         expect(res).to.eql(result);
-    })
+    });
+
+    it('multi resolve', async () => {
+        const result = Math.random();
+        const serviceP = service(result, 0).then(() => {}).then(() => {});
+        const res = await serviceP;
+
+        expect(res).to.eql(result);
+    });
+
+    it('Promise.resolve string', async () => {
+        const expected = Math.random();
+        const res = await P.resolve(expected);
+
+        expect(res).to.eql(expected);
+    });
+
+    it('Promise.resolve native promise', async () => {
+        const expected = Math.random();
+        const promisefy = (val, timeout) => {
+            return new Promise((resolve) => {
+                resolve(val);
+                setTimeout(() => {
+                    resolve(val);
+                }, timeout);
+            })
+        };
+        const res = await P.resolve(promisefy(expected, 1));
+
+       expect(res).to.eql(expected);
+    });
 
     it('all', async () => {
         const data = [
@@ -49,7 +78,7 @@ describe('Promise', () => {
         data.forEach((x) => {
             p.push(service(x.result, x.timeout));
         });
-        const res = await Promise.all(p);
+        const res = await P.all(p);
 
         expect(res).to.eql(res);
     });
@@ -75,7 +104,7 @@ describe('Promise', () => {
         data.forEach((x) => {
             p.push(service(x.result, x.timeout));
         });
-        const res = await Promise.race(p);
+        const res = await P.race(p);
 
         expect(res).to.eql(res);
     })

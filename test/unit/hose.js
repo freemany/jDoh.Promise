@@ -54,36 +54,35 @@ describe('Hose', () => {
             .pipe(async(res, resolve) => {
                 setTimeout(() => {
                     resolve(res + 10);
-                }, 10);
+                }, 1);
             })
             .pipe(async (res, resolve) => {
                 setTimeout(() => {
                     resolve(res - 20);
-                }, 20);
+                }, 2);
             })
             .yield(async (resP) => {
                 const res = await resP;
-                expect(res).to.equal(900);
+                expect(res).to.equal(90);
             });
     });
 
-    it('async yield invalid', () => {
+    it('async yield invalid', async () => {
         // 100 + 10 - 20  = 90
         (new Hose(100))
             .pipe((res, resolve) => {
                 setTimeout(() => {
                     resolve(res + 10);
-                }, 10);
+                }, 1);
             })
             .pipe((res, resolve) => {
                 setTimeout(() => {
                     resolve(res - 20);
-                }, 20);
+                }, 2);
             })
-            .yield((resP) => {
-                resP.then((res) => {
-                    expect(res).not.to.equal(90);
-                })
+            .yield(async (resP) => {
+                const res = await resP;
+                expect(res).not.to.equal(900);
             });
     });
 });

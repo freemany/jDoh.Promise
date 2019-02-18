@@ -8,7 +8,7 @@ describe('Hose', () => {
         (new Hose(10))
             .pipe((res) => {
                spy.result ++;
-               return res + 1;
+               resolve(res + 1);
         }).pipe(res => res - 2);
 
         expect(spy.result).to.equal(0);
@@ -22,12 +22,13 @@ describe('Hose', () => {
                 resolve(res + 1);
             })
             .pipe((res, resolve) => {
-                resolve(res - 2)
+                resolve(res - 2);
+                spy.result ++;
              })
             .yield((resP) => {
                 resP.then((res) => {
                     expect(res).to.equal(9);
-                    expect(spy.result).to.equal(1);
+                    expect(spy.result).to.equal(2);
                 })
             });
     });

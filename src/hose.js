@@ -7,16 +7,26 @@ class Hose {
     }
 
     pipe(operation) {
+        let resolver = null;
+        const p = new Promise((resolve) => {
+            resolver = resolve;
+        });
+
         if (true === this._init) {
             this.cal = () => {
-                return operation.call(this, this.initValue);
+                operation.call(this, this.initValue, resolver);
+
+                return p;
             };
             this._init = false;
         } else {
             const _cal = this.cal;
             this.cal = () => {
-                const result = _cal.call(this);
-                return operation.call(this, result);
+                _cal.call(this).then((res) => {
+                    operation.call(this, res, resolver);
+                });
+
+                return p;
             };
         }
 

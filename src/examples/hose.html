@@ -1,0 +1,90 @@
+<html>
+<head><script>
+    class Hose {
+
+        constructor(v) {
+            this.initValue = v;
+            this._init = true;
+            this.cal = null;
+        }
+
+        pipe(operation) {
+            let resolver = null;
+            const p = new Promise((resolve) => {
+                resolver = resolve;
+            });
+
+            if (true === this._init) {
+                this.cal = () => {
+                    operation.call(this, this.initValue, resolver);
+
+                    return p;
+                };
+                this._init = false;
+            } else {
+                const _cal = this.cal;
+                this.cal = () => {
+                    _cal.call(this).then((res) => {
+                        operation.call(this, res, resolver);
+                    });
+
+                    return p;
+                };
+            }
+
+            return this;
+        }
+
+        yield(cb) {
+            cb.call(this, this.cal.call(this));
+        }
+    }
+</script></head>
+<script>
+    (new Hose(10))
+        .pipe((res, resolve) => {
+            resolve(res + 1);
+        })
+        .pipe((res, resolve) => {
+            resolve(res - 2)
+        })
+        .yield((resP) => {
+            resP.then((res) => {
+                console.log(res, 9)
+            })
+        });
+
+
+    (new Hose(100)).pipe((res, resolve) => {
+        setTimeout(() => {
+            resolve(res + 10);
+        }, 1000);
+    })
+        .pipe((res, resolve) => {
+            setTimeout(() => {
+                resolve(res - 20);
+            }, 2000);
+        })
+        .yield((resP) => {
+            resP.then((res) => {
+                console.log(res, 90)
+            })
+        });
+
+    (new Hose(1)).pipe((res, resolve) => {
+        setTimeout(() => {
+            resolve(res + 10);
+        }, 1000);
+    })
+        .pipe((res, resolve) => {
+            // setTimeout(() => {
+            resolve(res - 20);
+            // }, 20);
+        })
+        .yield((resP) => {
+            resP.then((res) => {
+                console.log(res, -9)
+            })
+        });
+</script>
+</html>

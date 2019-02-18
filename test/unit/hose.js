@@ -17,14 +17,73 @@ describe('Hose', () => {
     it('yield', () => {
         // 10 + 1 - 2  = 9
         (new Hose(10))
-            .pipe((res) => {
+            .pipe((res, resolve) => {
                 spy.result ++;
-                return res + 1;
+                resolve(res + 1);
             })
-            .pipe(res => res - 2)
-            .yield((res) => {
-                expect(res).to.equal(9);
-                expect(spy.result).to.equal(1);
+            .pipe((res, resolve) => {
+                resolve(res - 2)
+             })
+            .yield((resP) => {
+                resP.then((res) => {
+                    expect(res).to.equal(9);
+                    expect(spy.result).to.equal(1);
+                })
+            });
+    });
+
+    it('yield invalid', () => {
+        // 10 + 1 - 2  = 9
+        (new Hose(10))
+            .pipe((res, resolve) => {
+                resolve(res + 1);
+            })
+            .pipe((res, resolve) => {
+                resolve(res - 2)
+            })
+            .yield((resP) => {
+                resP.then((res) => {
+                    expect(res).not.to.equal(19);
+                })
+            });
+    });
+
+    it('async yield', async () => {
+        // 100 + 10 - 20  = 90
+        (new Hose(100))
+            .pipe(async(res, resolve) => {
+                setTimeout(() => {
+                    resolve(res + 10);
+                }, 10);
+            })
+            .pipe(async (res, resolve) => {
+                setTimeout(() => {
+                    resolve(res - 20);
+                }, 20);
+            })
+            .yield(async (resP) => {
+                const res = await resP;
+                expect(res).to.equal(900);
+            });
+    });
+
+    it('async yield invalid', () => {
+        // 100 + 10 - 20  = 90
+        (new Hose(100))
+            .pipe((res, resolve) => {
+                setTimeout(() => {
+                    resolve(res + 10);
+                }, 10);
+            })
+            .pipe((res, resolve) => {
+                setTimeout(() => {
+                    resolve(res - 20);
+                }, 20);
+            })
+            .yield((resP) => {
+                resP.then((res) => {
+                    expect(res).not.to.equal(90);
+                })
             });
     });
 });

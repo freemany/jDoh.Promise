@@ -1,7 +1,7 @@
 {
-  "name": "EventManagerJs",
+  "name": "PromiseJs",
   "version": "1.0.0",
-  "description": "EventManager",
+  "description": "My own implimentation of JS Promise",
   "main": "index.js",
   "scripts": {
     "test:unit": "mocha ./test/unit/**/* --require test/global.js",

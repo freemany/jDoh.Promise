@@ -3,10 +3,9 @@ const P = require('../../src/promise.js');
 describe('Promise', () => {
     const service = (val, timeout) => {
         return new P((resolve, reject) => {
-            resolve(val);
             setTimeout(() => {
                 resolve(val);
-                // reject({msg: 'reject', error: val});
+                reject({msg: 'reject', error: val});
             }, timeout);
         })
     };

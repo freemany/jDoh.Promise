@@ -1,10 +1,7 @@
 class P {
     constructor(resolveCallback, rejectCallback) {
-        this.cbStack = [];
         this.cbRejectStack = [];
-        this.isInit = false;
         this.resolveCallback = resolveCallback;
-        this.rejectStack = [];
         this.resolve = null;
         this.result = null;
     }
@@ -18,7 +15,6 @@ class P {
     }
 
     then(cb) {
-
         const reject = () => {};
         if (null === this.resolve) {
             this.resolve= (result) => {
@@ -29,7 +25,6 @@ class P {
         } else {
             this.resolve = (result) => {
                 if (typeof cb === 'function') {
-                    this.then();
                     if (null === this.result || undefined=== this.result) {
                         this.result = cb.call(cb, result);
                     } else {

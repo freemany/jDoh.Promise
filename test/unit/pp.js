@@ -108,6 +108,7 @@ describe('Paul Promise', () => {
         res.forEach((v, i) => {
             expect(v).to.equal(expected[i]);
         })
+        expect(res.length).to.equal(expected.length);
     });
 
     // it('race', async () => {

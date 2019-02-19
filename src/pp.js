@@ -37,10 +37,10 @@ P.all = function all(promiseArr) {
     return new P(resolve => {
         const results = [];
 
-        promiseArr.forEach(promise => {
+        promiseArr.forEach((promise, i) => {
             promise.then(res => {
-                results.push(res);
-                if(results.length === arrLength) {
+                results[i] = res;
+                if (Object.keys(results).length === arrLength) {
                     resolve(results);
                 }
             });

@@ -2,11 +2,9 @@ const P = require('../../src/pp.js');
 
 describe('Paul Promise', () => {
     const service = (val, timeout) => {
-        return new P((resolve, reject) => {
-            resolve(val);
+        return new P((resolve) => {
             setTimeout(() => {
                 resolve(val);
-                // reject({msg: 'reject', error: val});
             }, timeout);
         })
     };
@@ -88,16 +86,16 @@ describe('Paul Promise', () => {
     it('all', async () => {
         const data = [
             {
-                result: '1_xxxxx', timeout: 2,
+                result: '1_xxxxx', timeout: 20,
             },
             {
-                result: '2_xxxxx', timeout: 3,
+                result: '2_xxxxx', timeout: 30,
             },
             {
-                result: '3_xxxxx', timeout: 1,
+                result: '3_xxxxx', timeout: 10,
             },
             {
-                result: '4_xxxxx', timeout: 0,
+                result: '4_xxxxx', timeout: 1,
             },
 
         ];
@@ -107,8 +105,9 @@ describe('Paul Promise', () => {
             p.push(service(x.result, x.timeout));
         });
         const res = await P.all(p);
-
-        expect(res).to.eql(expected);
+        res.forEach((v, i) => {
+            expect(v).to.equal(expected[i]);
+        })
     });
 
     // it('race', async () => {

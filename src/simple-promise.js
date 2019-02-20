@@ -15,7 +15,7 @@ class P {
     then(cb) {
         if(this.result) {
             this._cb = cb;
-            return P.resolve(cb(this.result));
+            return new P(resolve => resolve(cb(this.result)));
         }
         return new P(resolve => {
             this._cb = (result) => {

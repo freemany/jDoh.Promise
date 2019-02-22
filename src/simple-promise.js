@@ -1,13 +1,12 @@
 class P {
     constructor(resolveCallback) {
-        this._cb = null;
+        this._cb = () => {};
         this.result = null;
 
         const resolve = (result) => {
             this.result = result;
-            if ('function' === typeof this._cb) {
-                this._cb(result);
-            }
+            this._cb(result);
+
         };
         resolveCallback(resolve);
     }
